@@ -4,8 +4,8 @@
   <name>teleop_cpp_ros2</name>
   <version>0.1.0</version>
   <description>Keyboard teleoperation for ROS 2 using C++.</description>
-  <maintainer email="aarsh@example.com">aarsh</maintainer>
-  <license>Apache-2.0</license>
+  <maintainer email="leejae0720@example.com">aarsh</maintainer>
+  <license>GPL-3.0-or-later</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
