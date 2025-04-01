@@ -6,8 +6,8 @@ C++ Implementation of the Generic Keyboard Teleop for ROS2: https://git
 The original teleop_twist_keyboard package, which provided step commands, has been extended to support ramp commands. By adjusting acceleration and deceleration values and setting the control loop rate, this implementation enables ramp-based motion testing of the robot.
 
 ## Prerequisites
- - OS: Ubuntu OS or Window (Author using Ubuntu 22.04 vesion)
- - ROS2 (Author using humble version)
+ - OS: Ubuntu OS or Window (Author using Ubuntu 22.04 vesion) 
+ - ROS2 (Author using humble version)
 
 ## Getting Started
 
