@@ -77,4 +77,4 @@ CTRL-C to quit
 
 ## Contributor
  - Name: Jaehong Lee (이재홍)
- - Email: leejae0720@gmail.com
+ - Email: leejae0720@gmail.com
