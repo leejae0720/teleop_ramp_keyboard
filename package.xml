@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>teleop_cpp_ros2</name>
+  <name>teleop_ramp_keyboard</name>
   <version>0.1.0</version>
-  <description>Keyboard teleoperation for ROS 2 using C++.</description>
-  <maintainer email="leejae0720@example.com">aarsh</maintainer>
+  <description>Keyboard teleoperation ramp input for ROS 2 using C++.</description>
+  <maintainer email="leejae0720@gmail.com">Jaehong Lee</maintainer>
   <license>GPL-3.0-or-later</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

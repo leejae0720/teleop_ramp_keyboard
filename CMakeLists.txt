@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(teleop_cpp_ros2)
+project(teleop_ramp_keyboard)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -19,6 +19,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -29,10 +31,11 @@ endif()
 
 include_directories(include)
 
-add_executable(teleop src/teleop_cpp_ros2.cpp)
-ament_target_dependencies(teleop rclcpp geometry_msgs)
+add_executable(teleop_ramp_keyboard src/teleop_ramp_keyboard.cpp)
+ament_target_dependencies(teleop_ramp_keyboard rclcpp geometry_msgs spdlog)
+target_link_libraries(teleop_ramp_keyboard fmt::fmt)
 install(TARGETS
-teleop
+teleop_ramp_keyboard
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
