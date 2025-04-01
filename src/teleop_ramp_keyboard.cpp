@@ -3,7 +3,7 @@
  * @author    Jaehong Lee (leejae0720@gmail.com)
  * @brief     teleop ramp ROS2 keyboard implementation
  * @date      2025-04-01
- * @note      
+ * @note      This code is based on teleop_twist_keyboard.
  */
 
 #include <stdio.h>
