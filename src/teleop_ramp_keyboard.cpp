@@ -8,12 +8,23 @@
 
 #include "teleop_ramp_keyboard.hpp"
 
-TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard_node") {
+TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard") {
+
+  declare_parameter("linear_accel", 0.2f);
+  declare_parameter("angular_accel", 0.1f);
+  declare_parameter("control_period", 200);
+  get_parameter("linear_accel", linear_accel_);
+  get_parameter("angular_accel", angular_accel_);
+  get_parameter("control_period", control_period_); 
   pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1);
 
   spdlog::info("@copyright Copyright (c) Jaehong Lee(leejae0720@gmail.com) All rights reserved.");
   spdlog::info("{}", msg);
   spdlog::info("Now max speed is {0} and turn is {1}", speed_, turn_);
+
+  spdlog::info("linear acceleration: {0} m/s^2", linear_accel_);
+  spdlog::info("angular acceleration: {0} rad/s^2", angular_accel_);
+  spdlog::info("control period: {0} hz", control_period_);
 
   running_ = true;
   worker_ = std::thread([this]() {
@@ -21,7 +32,7 @@ TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard_node") {
     geometry_msgs::msg::Twist current_twist;
     geometry_msgs::msg::Twist target_twist;
 
-    rclcpp::Rate loop_rate(20); // 20Hz = 50ms
+    rclcpp::Rate loop_rate(control_period_);
 
     while (rclcpp::ok() && running_) {
       key = getch();

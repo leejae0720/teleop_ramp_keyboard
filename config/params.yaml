@@ -1,5 +1,6 @@
-
 teleop_ramp_keyboard:
   ros__parameters:
-    max_linear_velocity: 0.8            # 최대 직선 속도
-    max_angular_velocity: 0.6521030323  # 최대 회전 속도
+    linear_accel: 0.2     # linear acceleration [m/s^2]
+    angular_accel: 0.1   # angular acceleration [rad/s^2]
+    control_period: 200   # control period [hz]
+    

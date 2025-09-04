@@ -41,8 +41,9 @@ class TeleopRampKeyboard : public rclcpp::Node {
 
     float speed_ = 0.5f;
     float turn_  = 1.0f;
-    float linear_accel_  = 0.5f;   // m/s per loop
-    float angular_accel_ = 0.25f;  // rad/s per loop
+    float linear_accel_  = 0.2f;  // linear_acceleration[m/s^2]
+    float angular_accel_ = 0.1f;  // angular_acceleration [rad/s^2]
+    int control_period_ = 200;    // control period [hz]
 
     std::map<char, std::vector<float>> moveBindings
     {
