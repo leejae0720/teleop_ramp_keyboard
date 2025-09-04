@@ -1,0 +1,5 @@
+
+teleop_ramp_keyboard:
+  ros__parameters:
+    max_linear_velocity: 0.8            # 최대 직선 속도
+    max_angular_velocity: 0.6521030323  # 최대 회전 속도

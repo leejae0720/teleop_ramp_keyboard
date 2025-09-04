@@ -21,6 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -31,11 +32,17 @@ endif()
 
 include_directories(include)
 
-add_executable(teleop_ramp_keyboard src/teleop_ramp_keyboard.cpp)
+add_executable(teleop_ramp_keyboard src/teleop_ramp_keyboard.cpp src/main.cpp)
 ament_target_dependencies(teleop_ramp_keyboard rclcpp geometry_msgs spdlog)
+
 target_link_libraries(teleop_ramp_keyboard fmt::fmt)
+
 install(TARGETS
-teleop_ramp_keyboard
-DESTINATION lib/${PROJECT_NAME})
+  teleop_ramp_keyboard
+  DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 ament_package()
