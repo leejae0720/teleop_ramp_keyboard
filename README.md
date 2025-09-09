@@ -9,6 +9,19 @@ The original teleop_twist_keyboard package, which provided step commands,
  - OS: Ubuntu OS or Window (Author using Ubuntu 22.04 vesion) 
  - ROS2 (Author using humble version)
 
+## Parameter setting
+ - You can find the params.yaml file inside the config folder.
+ - Setting the parameter in this file.
+ - The default parameters are already set in this file.
+
+```bash
+teleop_ramp_keyboard:
+  ros__parameters:
+    linear_accel: 0.2     # linear acceleration [m/s^2]
+    angular_accel: 0.1    # angular acceleration [rad/s^2]
+    control_period: 200   # control period [hz]
+```
+
 ## Getting Started
 
 ```bash
@@ -22,10 +35,8 @@ source install/setup.bash
 ## Run
 
 ```bash
-source the ros2 worksapce and
-
-# In terminal, run
-ros2 run teleop_ramp_keyboard teleop_ramp_keyboard
+# In terminal, launch
+ros2 launch teleop_ramp_keyboard teleop_ramp_keyboard
 
 # If you want to see the outputs, check the /cmd_vel topic
 ros2 topic echo /cmd_vel
