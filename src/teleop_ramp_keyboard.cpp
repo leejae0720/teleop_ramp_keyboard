@@ -2,7 +2,7 @@
  * @file      teleop_ramp_keyboard.cpp
  * @author    Jaehong Lee (leejae0720@gmail.com)
  * @brief     teleop ramp ROS2 keyboard implementation
- * @date      2025-09-04
+ * @date      2025-09-17
  * @note      This code is based on teleop_twist_keyboard.
  */
 
@@ -27,6 +27,7 @@ TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard") {
   spdlog::info("control period: {0} hz", control_period_);
 
   running_ = true;
+  last_key_time_ = std::chrono::steady_clock::now();
   worker_ = std::thread([this]() {
     char key;
     geometry_msgs::msg::Twist current_twist;
@@ -36,6 +37,10 @@ TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard") {
 
     while (rclcpp::ok() && running_) {
       key = getch();
+
+      if (key != 0) {
+        last_key_time_ = std::chrono::steady_clock::now();
+      }
 
       if (key == 'A' || key == 'B') {
         float x = l_vel(key, target_twist.linear.x / speed_);
@@ -77,6 +82,11 @@ TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard") {
         if (key != 0) {
           spdlog::warn("Current: speed {0} turn {1} | Invalid command! {2}", speed_, turn_, key);
         }
+      }
+
+      auto now = std::chrono::steady_clock::now();
+      if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_key_time_).count() > 500) {
+        target_twist = geometry_msgs::msg::Twist();
       }
 
       current_twist.linear.x  = ramped_vel(current_twist.linear.x,  target_twist.linear.x,  linear_accel_);

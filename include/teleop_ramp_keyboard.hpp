@@ -38,6 +38,7 @@ class TeleopRampKeyboard : public rclcpp::Node {
 
     std::thread worker_;
     std::atomic_bool running_{false};
+    std::chrono::steady_clock::time_point last_key_time_;
 
     float speed_ = 0.5f;
     float turn_  = 1.0f;
