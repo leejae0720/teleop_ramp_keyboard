@@ -1,6 +1,6 @@
 teleop_ramp_keyboard:
   ros__parameters:
     linear_accel: 0.2     # linear acceleration [m/s^2]
-    angular_accel: 0.1   # angular acceleration [rad/s^2]
+    angular_accel: 0.1    # angular acceleration [rad/s^2]
     control_period: 200   # control period [hz]
     

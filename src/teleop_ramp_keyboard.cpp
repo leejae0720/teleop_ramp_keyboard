@@ -2,7 +2,7 @@
  * @file      teleop_ramp_keyboard.cpp
  * @author    Jaehong Lee (leejae0720@gmail.com)
  * @brief     teleop ramp ROS2 keyboard implementation
- * @date      2025-09-17
+ * @date      2025-09-18
  * @note      This code is based on teleop_twist_keyboard.
  */
 
@@ -17,6 +17,14 @@ TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard") {
   get_parameter("angular_accel", angular_accel_);
   get_parameter("control_period", control_period_); 
   pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1);
+
+  if (control_period_ <= 0) {
+    spdlog::error("control_period must be > 0. Given: {}", control_period_);
+    control_period_ = 200;
+  }
+  const float dt = 1.0f / static_cast<float>(control_period_);
+  const float lin_step_preview = linear_accel_ * dt; // [m/s per cycle]
+  const float ang_step_preview = angular_accel_ * dt; // [rad/s per cycle]
 
   spdlog::info("@copyright Copyright (c) Jaehong Lee(leejae0720@gmail.com) All rights reserved.");
   spdlog::info("{}", msg);
@@ -80,19 +88,23 @@ TeleopRampKeyboard::TeleopRampKeyboard() : Node("teleop_ramp_keyboard") {
       }
       else {
         if (key != 0) {
-          spdlog::warn("Current: speed {0} turn {1} | Invalid command! {2}", speed_, turn_, key);
+          spdlog::warn("Current: speed {0} turn {1} | Invalid command! {2}, please check korean-english toggle", speed_, turn_, key);
         }
       }
 
       auto now = std::chrono::steady_clock::now();
-      if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_key_time_).count() > 500) {
+      if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_key_time_).count() > 1000) {
         target_twist = geometry_msgs::msg::Twist();
       }
 
-      current_twist.linear.x  = ramped_vel(current_twist.linear.x,  target_twist.linear.x,  linear_accel_);
-      current_twist.linear.y  = ramped_vel(current_twist.linear.y,  target_twist.linear.y,  linear_accel_);
-      current_twist.linear.z  = ramped_vel(current_twist.linear.z,  target_twist.linear.z,  linear_accel_);
-      current_twist.angular.z = ramped_vel(current_twist.angular.z, target_twist.angular.z, angular_accel_);
+      const float dt = 1.0f / static_cast<float>(control_period_);
+      const float lin_step = linear_accel_ * dt;   // [m/s per cycle]
+      const float ang_step = angular_accel_ * dt;  // [rad/s per cycle]
+
+      current_twist.linear.x  = ramped_vel(current_twist.linear.x,  target_twist.linear.x,  lin_step);
+      current_twist.linear.y  = ramped_vel(current_twist.linear.y,  target_twist.linear.y,  lin_step);
+      current_twist.linear.z  = ramped_vel(current_twist.linear.z,  target_twist.linear.z,  lin_step);
+      current_twist.angular.z = ramped_vel(current_twist.angular.z, target_twist.angular.z, ang_step);
 
       pub_->publish(current_twist);
       loop_rate.sleep();
@@ -109,15 +121,21 @@ int TeleopRampKeyboard::getch(void)
 {
   int ch = 0;
   int fd = open("/dev/tty", O_RDONLY | O_NONBLOCK);
-  if (fd < 0) return 0;
+  if (fd < 0) {
+    fd = STDIN_FILENO;
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags != -1) fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+    spdlog::warn("getch(): /dev/tty open failed (no TTY). Falling back to STDIN.");
+  }
 
   struct termios oldt{}, newt{};
-  tcgetattr(fd, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  newt.c_cc[VMIN] = 0;
-  newt.c_cc[VTIME] = 0;
-  tcsetattr(fd, TCSANOW, &newt);
+  if (tcgetattr(fd, &oldt) == 0) {
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    newt.c_cc[VMIN] = 0;
+    newt.c_cc[VTIME] = 0;
+    tcsetattr(fd, TCSANOW, &newt);
+  }
 
   unsigned char c;
   if (read(fd, &c, 1) == 1) {
@@ -125,13 +143,13 @@ int TeleopRampKeyboard::getch(void)
     if (ch == 0x1B) {
       unsigned char buf[2];
       if (read(fd, buf, 1) == 1 && buf[0] == '[') {
-        if (read(fd, buf+1, 1) == 1) ch = buf[1];
+        if (read(fd, buf+1, 1) == 1) ch = buf[1]; // 'A','B','C','D'
       }
     }
   }
 
-  tcsetattr(fd, TCSANOW, &oldt);
-  close(fd);
+  if (tcgetattr(fd, &oldt) == 0) tcsetattr(fd, TCSANOW, &oldt);
+  if (fd != STDIN_FILENO) close(fd);
   return ch;
 }
 
